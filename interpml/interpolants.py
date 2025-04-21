@@ -79,7 +79,7 @@ import warnings
 
 def delaunayError(train_x, train_y, test_x,
                   only_in_hull=False, rescale_x=True, rescale_y=True,
-                  true_bound=False):
+                  true_bound=False, simps=None, weights=None, residuals=None):
     """ Estimate the local interpolation error.
 
     Args:
@@ -133,7 +133,10 @@ def delaunayError(train_x, train_y, test_x,
     inds = 0
     wts = 0
     res = 0
-    inds, wts, res = __delaunay_simplex(rescaled_set_x, q)
+    if simps is None or weights is None or residuals is None:
+        inds, wts, res = __delaunay_simplex(rescaled_set_x, q)
+    else:
+        inds, wts, res = simps, weights, residuals
     # Initialize output array
     local_errs = []
     # Loop over all outputs
@@ -153,7 +156,7 @@ def delaunayError(train_x, train_y, test_x,
                 sigmai = np.mean(linalg.svd(Ai, compute_uv=False))
                 #sigmai = linalg.svd(Ai, compute_uv=False)[-1] ** 0.25
             # Get the min distance to nearest vertex
-            minD = np.infty
+            minD = np.inf
             min_ind = -1
             for j, xj in zip(inds[i, :], rescaled_set_x[inds[i, :]]):
                 # Check distance to z_hat for each vertex
@@ -265,7 +268,7 @@ def delaunayInterp(train_x, train_y, test_x,
         else:
             results.append(yi * yscale + yshift)
     if return_weights:
-        return np.asarray(results), inds, wts
+        return np.asarray(results), inds, wts, res
     else:
         return np.asarray(results)
 
