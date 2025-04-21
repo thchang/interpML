@@ -110,7 +110,8 @@ approx_bounds = interpml.delaunayError(train_reduced["x"],
                                        test["x"],
                                        only_in_hull=False,
                                        true_bound=False)
-predictions, simps, weights = interpml.delaunayInterp(train_reduced["x"],
+predictions, simps, weights, residuals = interpml.delaunayInterp(
+                                                      train_reduced["x"],
                                                       train_reduced["y"],
                                                       test["x"],
                                                       only_in_hull=False,
